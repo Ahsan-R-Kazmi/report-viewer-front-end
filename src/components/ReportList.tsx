@@ -1,15 +1,13 @@
 import axios, { AxiosResponse } from "axios";
 import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "react-bootstrap";
 import * as constants from "../constants";
 import { useToasts } from 'react-toast-notifications'
 import "./styles/ReportList.css"
-import { SUCCESS_TOAST_OPTIONS, ERROR_TOAST_OPTIONS } from "../App";
+import {  ERROR_TOAST_OPTIONS } from "../App";
 import { SearchBar } from "./SearchBar";
 import {Report} from "./ReportPage"
 
 export interface Props {
-
 }
 
 export interface State {
@@ -94,7 +92,6 @@ export const ReportList: React.FC<Props> = (props: Props) => {
     }
 
     const handleSearchBarSubmit = (searchTerm: string) => {
-        debugger
         setSearchTerm(searchTerm)
     }
 

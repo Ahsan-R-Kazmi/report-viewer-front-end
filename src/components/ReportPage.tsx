@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from "axios";
-import { Button } from "react-bootstrap";
 import * as constants from "../constants";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 import { useToasts } from 'react-toast-notifications'
 import "./styles/ReportPage.css"
 import { SUCCESS_TOAST_OPTIONS, ERROR_TOAST_OPTIONS } from "../App";
@@ -14,9 +13,13 @@ export interface Props {
 
 export interface State {
     report: Report,
+    tagLists: TagLists  
+}
+
+export interface TagLists {
     activeTagList: ReportTag[],
     inactiveTagList: ReportTag[],
-    unassignedTagList: ReportTag[]   
+    unassignedTagList: ReportTag[],
 }
 
 export interface Report {
@@ -34,9 +37,11 @@ export const ReportPage: React.FC<Props> = (props: Props) => {
     const { addToast } = useToasts()
 
     const [report, setReport] = useState<Report>()
-    const [activeTagList, setActiveTagList] = useState<ReportTag[]>([])
-    const [inactiveTagList, setInactiveTagList] = useState<ReportTag[]>([])
-    const [unassignedTagList, setUnassignedTagList] = useState<ReportTag[]>([])
+    const [tagLists, setTagLists] = useState({
+        activeTagList: [] as ReportTag[],
+        inactiveTagList: [] as ReportTag[],
+        unassignedTagList: [] as ReportTag[]
+    })
 
     const getReport = useCallback(
         () => {
@@ -56,20 +61,17 @@ export const ReportPage: React.FC<Props> = (props: Props) => {
         }, [addToast, props.reportId]
     )
 
-    const getReportTagListAndUnassignedTagList = useCallback(
+    const getReportTagLists = useCallback(
         () => {
             // Call the API to get the report tags and unassigned report tags.
             axios.get(constants.SERVER_URL + constants.GET_REPORT_TAG_LISTS_PATH + "/" + props.reportId)
                 .then((res: AxiosResponse) => {
-                    if (!!res?.data["activeTagList"]) {
-                        setActiveTagList(res.data["activeTagList"])
+                    let tagLists: TagLists = {
+                        activeTagList: !!res?.data["activeTagList"] ? res?.data["activeTagList"] : [] as ReportTag[],
+                        inactiveTagList: !!res?.data["inactiveTagList"] ? res?.data["inactiveTagList"]: [] as ReportTag[],
+                        unassignedTagList: !!res?.data["unassignedTagList"] ? res?.data["unassignedTagList"] : [] as ReportTag[]
                     }
-                    if (!!res?.data["inactiveTagList"]) {
-                        setActiveTagList(res.data["inactiveTagList"])
-                    }
-                    if (!!res?.data["unassignedTagList"]) {
-                        setUnassignedTagList(res.data["unassignedTagList"])
-                    }
+                    setTagLists(tagLists)
                 })
                 .catch((err: any) => {
                     let errorMessage = (!!err?.response?.data && typeof err?.response?.data === 'string')
@@ -84,16 +86,68 @@ export const ReportPage: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         getReport()
-        getReportTagListAndUnassignedTagList()
-    }, [getReport, getReportTagListAndUnassignedTagList])
+        getReportTagLists()
+    }, [getReport, getReportTagLists])
 
+
+    const handleDrop = (draggedTag: ReportTag, listName: string, active?: boolean) => {
+        // Remove this tag from all the other lists (if present).
+        let newActiveTagList = tagLists.activeTagList.filter((tag: ReportTag) => {return tag.id !== draggedTag.id})
+        let newInactiveTagList = tagLists.inactiveTagList.filter((tag: ReportTag) => {return tag.id !== draggedTag.id})
+        let newUnassignedTagList = tagLists.unassignedTagList.filter((tag: ReportTag) => {return tag.id !== draggedTag.id})
+
+        
+        // Add this tag to the list for this tag container based on the type and active values.
+        switch (listName) {
+            case 'activeTagList': {
+                draggedTag.active = true
+                newActiveTagList.push(draggedTag)
+                break;
+            }
+            case 'inactiveTagList': {
+                draggedTag.active = false
+                newInactiveTagList.push(draggedTag)
+                break;
+            }
+            case 'unassignedTagList': {
+                draggedTag.active = undefined
+                newUnassignedTagList.push(draggedTag)
+                break;
+            }
+        }
+
+        let reportTagList: ReportTag[] = []
+        reportTagList = reportTagList.concat(newActiveTagList).concat(newInactiveTagList)
+
+        // Add all the report tags to a single list and make a PUT request to save them.
+        axios.put(constants.SERVER_URL + constants.UPDATE_REPORT_TAGS_PATH + "/" + props.reportId, reportTagList)
+        .then((res: AxiosResponse) => {
+            addToast("Successfully updated the report's tags.", SUCCESS_TOAST_OPTIONS)
+        })
+        .catch((err: any) => {
+            let errorMessage = (!!err?.response?.data && typeof err?.response?.data === 'string')
+                ? err?.response?.data
+                : "There was an error in updating the report tags on the server"
+
+            console.error(errorMessage)
+            addToast(errorMessage, ERROR_TOAST_OPTIONS)
+        })
+
+        setTagLists(
+            {
+                activeTagList: newActiveTagList,
+                inactiveTagList: newInactiveTagList,
+                unassignedTagList: newUnassignedTagList
+            }
+        )
+    }
 
     return (
         <div className="container-fluid">
             <div className="row">
                 <div className="col-2 unassigned-tags">
-                    <p style={{marginTop: "10px"}}>Unassigned Tags</p>
-                    <TagContainer type="unassigned" tagList={unassignedTagList}/>
+                    <TagContainer listName="unassignedTagList" tagList={tagLists.unassignedTagList} handleDrop={handleDrop}
+                    containerName="Unassigned Tags"/>
                 </div>
                 <div className="col-10 report-container">
                     <div className="container">
@@ -107,16 +161,12 @@ export const ReportPage: React.FC<Props> = (props: Props) => {
                             <div className="container-fluid">
                                 <div className="row">
                                     <div className="col-6 assigned-tags">
-                                        <p>
-                                            Active Tags
-                                        </p>
-                                        <TagContainer type="assigned" tagList={activeTagList}/>
+                                        <TagContainer listName="activeTagList" tagList={tagLists.activeTagList} handleDrop={handleDrop} 
+                                        containerName="Active Tags"/>
                                     </div>
                                     <div className="col-6 assigned-tags">
-                                        <p>
-                                            Inactive Tags
-                                        </p>
-                                        <TagContainer type="assigned" tagList={inactiveTagList}/>
+                                        <TagContainer listName="inactiveTagList" tagList={tagLists.inactiveTagList} handleDrop={handleDrop}
+                                        containerName="Inactive Tags"/>
                                     </div>
                                 </div>
                             </div>

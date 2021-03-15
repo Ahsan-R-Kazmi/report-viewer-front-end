@@ -3,6 +3,7 @@ import "./styles/Tag.css"
 
 export interface Props {
     tag: ReportTag
+    handleDrop: (event: any) => void
 }
 
 export interface State {
@@ -30,9 +31,7 @@ export const Tag: React.FC<Props> = (props: Props) => {
     const handleDragStart = (event: any) => {
         const target = event.target
         event.dataTransfer.dropEffect = "move"
-        event.target.customData = {
-            tag: props.tag
-        }
+        event.dataTransfer.setData("text/plain", JSON.stringify(props.tag))
 
         setTimeout(() => {
             target.style.display = "none"
@@ -40,7 +39,11 @@ export const Tag: React.FC<Props> = (props: Props) => {
     }
 
     const handleDragOver = (event: any) => {
-        event.stopPropagation()
+        event.preventDefault()
+    }
+
+    const handleDragEnter = (event: any) => {
+        event.preventDefault()
     }
 
     const handleDragEnd = (event: any) => {
@@ -53,6 +56,8 @@ export const Tag: React.FC<Props> = (props: Props) => {
             onDragOver={handleDragOver}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
+            onDragEnter={handleDragEnter}
+            onDrop={props.handleDrop}
             className="tag" style={{ border: "2px solid " + color, fontSize: "10px" }}>
             {props.tag.name}
         </div>
