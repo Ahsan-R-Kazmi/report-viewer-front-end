@@ -1,26 +1,45 @@
 import React from 'react';
-import logo from './logo.svg';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import { ReportPage } from './components/ReportPage'
+import { ReportList } from './components/ReportList';
+import { DefaultToastContainer, Options, ToastProvider } from 'react-toast-notifications'
+import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+
+export const ERROR_TOAST_OPTIONS: Options = { appearance: 'error', autoDismiss: true }
+export const SUCCESS_TOAST_OPTIONS: Options = { appearance: 'success', autoDismiss: true }
+
+const ToastContainer = (props: any) => (
+    <DefaultToastContainer
+      className="toast-container"
+      style={{ zIndex: 2000 }}
+      {...props}
+    />
+  );
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    return (
+        <ToastProvider
+            placement="top-center"
+            components={{ ToastContainer }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+            <Router>
+                <Switch>
+                    <Route exact path="/">
+                        <div>
+                            <div className="header">Report Searcher</div>
+                            <ReportList />
+                        </div>
+                    </Route>
+                    <Route exact path="/report/:id" render={({ match }) => (
+                        <ReportPage
+                            reportId={match.params.id}
+                        />
+                    )} />
+                </Switch>
+            </Router>
+        </ToastProvider>
+    );
 }
 
 export default App;

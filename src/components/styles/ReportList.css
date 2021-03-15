@@ -1,0 +1,30 @@
+.card {
+    display: flex;
+
+    padding: 10px;
+
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    background-color: white;
+    color:  #333;
+  
+    top:0;
+    position:relative;
+    -webkit-transition: all 0.1s  ease-out;
+    -moz-transition: all 0.1s  ease-out;
+    -ms-transition: all 0.1s  ease-out;
+    -o-transition: all 0.1s  ease-out;
+    transition: all 0.1s ease-out;
+  
+    margin: 11px 0 0 11px;
+  }
+
+.card:hover {
+    cursor: pointer;
+    box-shadow: 0 10px 20px 0 rgba(0,0,0,0.2);
+    top: -12px;
+    text-decoration: none;
+}
+
+.search {
+    margin: 11px 0 15px 11px;
+}

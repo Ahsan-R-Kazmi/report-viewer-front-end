@@ -1,0 +1,25 @@
+.unassigned-tags {
+    justify-content: center;
+    text-align: center;
+}
+
+.assigned-tags {
+    border: 2px solid #444444;
+}
+
+.report-container {
+    background-color: #949494;
+    border: 2px solid #444444;
+}
+
+.report {
+    justify-content: center;
+    text-align: center;
+    padding-top: 10px;
+    background-color: white;
+}
+
+.report-text {
+    white-space: pre-line;
+    margin-top: 35px;
+}

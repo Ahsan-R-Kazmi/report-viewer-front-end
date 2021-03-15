@@ -1,0 +1,31 @@
+.search-bar {
+    padding-left: 33px;
+    outline: none;
+    border-radius: 5px;
+    border: 1px #f1f3f4 solid;
+    background-color: #f1f3f4;
+    width: 100%;
+}
+
+.search-bar:focus {
+    background-color: white;
+    box-shadow: 0 0 0 2px #5f6368;
+    border-radius: 5px;
+
+    -webkit-transition: all 0.1s  ease-out;
+    -moz-transition: all 0.1s  ease-out;
+    -ms-transition: all 0.1s  ease-out;
+    -o-transition: all 0.1s  ease-out;
+    transition: all 0.1s ease-out;
+}
+
+span {
+    position: absolute;
+    margin-left: 5px;
+    display: flex;
+    padding: 3px 0 0 3px;
+}
+
+.search-icon {
+    filter: invert(42%) sepia(12%) saturate(206%) hue-rotate(173deg) brightness(87%) contrast(90%);
+}
