@@ -1,4 +1,4 @@
-export const SERVER_URL: string =  process.env.NODE_ENV === 'production' ? 'http://' :"http://localhost:8081"
+export const SERVER_URL: string =  process.env.NODE_ENV === 'production' ? 'http://34.83.45.18:8080' :"http://localhost:8080"
 export const GET_REPORT_LIST_PATH: string = "/api/v1/report/getReportList"
 export const GET_REPORT_PATH: string = "/api/v1/report/getReport"
 export const GET_REPORT_TAG_LISTS_PATH: string = "/api/v1/report/getReportTagLists"
