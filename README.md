@@ -1,3 +1,24 @@
+# Segmed Demo Front-end
+
+This is the front-end of the demo project. It uses React and Typescript. It provides a UI where users can view, search, and tag reports.
+
+## Setup
+First, install `nodejs`, `npm`, and `yarn`. This project was built using versions: `14.16`, `7.6.2`, and `1.22.5`. 
+
+## Deployment
+To deploy for development, run `yarn install` and `yarn start` from the `segmed-demo-front-end` directory.
+<br/>
+To deploy for production, run `yarn install` and `yarn build`. <br/>
+Then run the following to serve the application:
+```
+npm install -g serve
+serve -s build
+```
+
+Take care to note that a production deployment will use the production backend, whereas a developmeny deployment will use a local backend.
+
+* Further generic information regarding how this app was created and detailed information that may be useful appears below: 
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
