@@ -1,4 +1,4 @@
-# Segmed Demo Front-end
+# Report Viewer Front-end
 
 This is the front-end of the demo project. It uses React and Typescript. It provides a UI where users can view, search, and tag reports.
 
